@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flask01
+  namespace: openshift-gitops
+spec:
+  destination:
+    name: ''
+    namespace: flask01
+    server: 'https://kubernetes.default.svc'
+  source: 
+    path: .
+    repoURL: https://github.com/VictorFernandezArias/gitops-helm-java.git
+    targetRevision: main
+    helm:
+      valueFiles:
+      - values.yaml
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    retry:
+      limit: 10
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: openshift-gitops
+      # annotations:
+      #   argocd.argoproj.io/sync-wave: "0"
+    syncOptions:
+    - CreateNamespace=true
